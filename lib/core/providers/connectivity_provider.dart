@@ -1,43 +1,43 @@
-import 'package:flutter/material.dart';
+// core/providers/connectivity_provider.dart
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/material.dart';
 
 class ConnectivityProvider with ChangeNotifier {
-  ConnectivityResult _connectivityStatus = ConnectivityResult.none;
+  final Connectivity _connectivity;
 
-  ConnectivityProvider() {
+  bool _isConnected = true;
+  bool get isConnected => _isConnected;
+
+  ConnectivityProvider({Connectivity? connectivity})
+    : _connectivity = connectivity ?? Connectivity() {
     _init();
   }
 
-  ConnectivityResult get connectivityStatus => _connectivityStatus;
-
   Future<void> _init() async {
-    // Estado inicial
-    _updateStatus(
-      (await Connectivity().checkConnectivity()) as ConnectivityResult,
-    );
+    // Verificar el estado inicial
+    await _checkConnectivity();
 
-    // Suscripción a cambios
-    Connectivity().onConnectivityChanged.listen((
+    // Escuchar cambios en la conectividad
+    _connectivity.onConnectivityChanged.listen((
       List<ConnectivityResult> results,
     ) {
-      // Toma el primer resultado disponible, o none si la lista está vacía
-      final result = results.isNotEmpty
-          ? results.first
-          : ConnectivityResult.none;
-      _updateStatus(result);
+      _updateStatus(results);
     });
   }
 
-  void _updateStatus(ConnectivityResult result) {
-    if (_connectivityStatus != result) {
-      _connectivityStatus = result;
-      notifyListeners();
-    }
+  Future<void> _checkConnectivity() async {
+    final results = await _connectivity.checkConnectivity();
+    _updateStatus(results);
   }
 
-  Future<bool> get isConnected async {
-    final result = await Connectivity().checkConnectivity();
-    // ignore: unrelated_type_equality_checks
-    return result != ConnectivityResult.none;
+  void _updateStatus(List<ConnectivityResult> results) {
+    final newStatus =
+        results.contains(ConnectivityResult.mobile) ||
+        results.contains(ConnectivityResult.wifi);
+
+    if (_isConnected != newStatus) {
+      _isConnected = newStatus;
+      notifyListeners();
+    }
   }
 }

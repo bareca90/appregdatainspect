@@ -1,8 +1,10 @@
 import 'package:appregdatainspect/core/constants/app_routes.dart';
 import 'package:appregdatainspect/core/providers/auth_provider.dart';
 import 'package:appregdatainspect/core/providers/connectivity_provider.dart';
+import 'package:appregdatainspect/core/providers/references_provider.dart';
 import 'package:appregdatainspect/core/providers/theme_provider.dart';
 import 'package:appregdatainspect/core/services/api_service.dart';
+import 'package:appregdatainspect/core/services/local_db_service.dart';
 import 'package:appregdatainspect/core/services/shared_prefs_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -24,13 +26,17 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider.value(value: authProvider),
         ChangeNotifierProvider(create: (_) => ConnectivityProvider()),
+        ChangeNotifierProvider(
+          create: (_) => ReferencesProvider(
+            apiService: apiService,
+            localDbService: localDbService,
+          ),
+        ),
       ],
       child: const MyApp(),
     ),
   );
 }
-
-class LocalDbService {}
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});

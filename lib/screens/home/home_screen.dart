@@ -1,4 +1,5 @@
 import 'package:appregdatainspect/core/constants/app_colors.dart';
+import 'package:appregdatainspect/core/constants/app_routes.dart';
 import 'package:appregdatainspect/core/constants/app_strings.dart';
 import 'package:appregdatainspect/core/providers/auth_provider.dart';
 import 'package:flutter/material.dart';
@@ -82,6 +83,7 @@ class HomeScreen extends StatelessWidget {
                     onTap: () {
                       // Navegar a pantalla de registro de kilos
                       /*  Navigator.pushNamed(context, AppRoutes.materialPescaList); */
+                      Navigator.pushNamed(context, AppRoutes.referencesList);
                     },
                   ),
 
