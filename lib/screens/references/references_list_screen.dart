@@ -1,6 +1,7 @@
 import 'package:appregdatainspect/core/constants/app_colors.dart';
 import 'package:appregdatainspect/core/providers/references_provider.dart';
 import 'package:appregdatainspect/models/reference_model.dart';
+import 'package:appregdatainspect/screens/references/inspection_form_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -23,7 +24,33 @@ class ReferencesListScreen extends StatelessWidget {
         actions: [
           IconButton(
             icon: const Icon(Icons.sync),
-            onPressed: () => provider.syncReferences(),
+            onPressed: () async {
+              final provider = Provider.of<ReferencesProvider>(
+                context,
+                listen: false,
+              );
+              final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+              try {
+                // Primero sincronizar los cambios locales
+                await provider.syncPendingReferences();
+
+                // Luego actualizar toda la lista
+                await provider.syncReferences();
+
+                scaffoldMessenger.showSnackBar(
+                  const SnackBar(
+                    content: Text('Datos sincronizados correctamente'),
+                  ),
+                );
+              } catch (e) {
+                scaffoldMessenger.showSnackBar(
+                  SnackBar(
+                    content: Text('Error al sincronizar: ${e.toString()}'),
+                  ),
+                );
+              }
+            },
             tooltip: 'Sincronizar',
           ),
         ],
@@ -155,8 +182,25 @@ class _ReferenceCard extends StatelessWidget {
         ),
         child: InkWell(
           borderRadius: BorderRadius.circular(12),
-          onTap: () {
+          onTap: () async {
             // Navegar a pantalla de detalle si es necesario
+            final updatedReference = await Navigator.push<Reference>(
+              context,
+              MaterialPageRoute(
+                builder: (context) =>
+                    InspectionFormScreen(reference: reference),
+              ),
+            );
+
+            if (updatedReference != null) {
+              // Actualizar la referencia en tu provider
+              // ignore: use_build_context_synchronously
+              final provider = Provider.of<ReferencesProvider>(
+                context,
+                listen: false,
+              );
+              provider.updateReference(updatedReference);
+            }
           },
           child: Padding(
             padding: const EdgeInsets.all(16),

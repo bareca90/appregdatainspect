@@ -43,6 +43,82 @@ class ReferencesProvider with ChangeNotifier {
     }
   }
 
+  Future<void> updateReference(Reference reference) async {
+    try {
+      // Actualizar en la lista local
+      final index = _references.indexWhere(
+        (r) => r.reference == reference.reference,
+      );
+      if (index == -1) {
+        _references.add(reference);
+      } else {
+        _references[index] = reference;
+      }
+
+      // Guardar en la base de datos local
+      await _localDbService.saveReferences(_references);
+      notifyListeners();
+    } catch (e) {
+      throw Exception('Error al guardar localmente: ${e.toString()}');
+    }
+  }
+
+  Future<void> syncPendingReferences() async {
+    try {
+      final token = await SharedPrefsService.getToken();
+      if (token == null) return;
+
+      final pendingReferences = _references.where((r) => !r.isSynced).toList();
+
+      for (final reference in pendingReferences) {
+        try {
+          final success = await syncReferenceWithApi(reference);
+          if (!success) break; // Detener si hay un error
+        } catch (e) {
+          break;
+        }
+      }
+    } catch (e) {
+      _hasError = true;
+      _errorMessage = 'Error al sincronizar pendientes: ${e.toString()}';
+      notifyListeners();
+    }
+  }
+
+  Future<bool> syncReferenceWithApi(Reference reference) async {
+    try {
+      final token = await SharedPrefsService.getToken();
+      if (token == null) return false;
+
+      // Solo sincronizar si hay al menos un dato completo
+      if (!_hasCompleteSection(reference)) return false;
+
+      final response = await _apiService.insertDataReference(reference, token);
+
+      if (response.code == 200) {
+        final index = _references.indexWhere(
+          (r) => r.reference == reference.reference,
+        );
+        if (index != -1) {
+          _references[index] = reference.copyWith(isSynced: true);
+          await _localDbService.updateReference(_references[index]);
+          notifyListeners();
+        }
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  bool _hasCompleteSection(Reference ref) {
+    // Verificar si al menos una sección está completa
+    return (ref.releaseStartDate != null && ref.releaseStartTime != null) ||
+        (ref.sampleStartDate != null && ref.sampleStartTime != null) ||
+        (ref.stampedDate != null && ref.stampedTime != null);
+  }
+
   Future<void> _loadFromApi() async {
     try {
       final token = await SharedPrefsService.getToken();

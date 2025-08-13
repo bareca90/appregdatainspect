@@ -4,7 +4,7 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class LocalDbService {
-  static const String _dbName = 'inspection_db.db';
+  static const String _dbName = 'inspection_data_db.db';
   static const int _dbVersion = 1;
   static const String _tableName =
       'inspection_references'; // Cambiado de 'references'
@@ -47,6 +47,17 @@ class LocalDbService {
         isSynced INTEGER DEFAULT 0
       )
     ''');
+  }
+
+  Future<void> updateReference(Reference reference) async {
+    final db = await database;
+    await db.update(
+      'inspection_references',
+      reference.toJson()..['isSynced'] = reference.isSynced ? 1 : 0,
+      where: 'reference = ?',
+      whereArgs: [reference.reference],
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   Future<void> saveReferences(List<Reference> references) async {
