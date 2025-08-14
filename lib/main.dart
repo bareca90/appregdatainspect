@@ -20,6 +20,7 @@ void main() async {
   // Inicializa providers
   final authProvider = AuthProvider();
   await authProvider.loadToken();
+  await authProvider.loaduserName();
   runApp(
     MultiProvider(
       providers: [

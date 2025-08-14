@@ -196,6 +196,7 @@ class _ReferenceCard extends StatelessWidget {
               // Actualizar la referencia en tu provider
               // ignore: use_build_context_synchronously
               final provider = Provider.of<ReferencesProvider>(
+                // ignore: use_build_context_synchronously
                 context,
                 listen: false,
               );

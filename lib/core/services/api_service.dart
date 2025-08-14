@@ -36,6 +36,7 @@ class ApiService {
   Future<ApiResponse> insertDataReference(
     Reference reference,
     String token,
+    String username,
   ) async {
     final response = await _client.post(
       Uri.parse('$baseUrl/data/insertdatareferences'),
@@ -66,6 +67,7 @@ class ApiService {
         "releaseTemperature": reference.releaseTemperature,
         "sampleTemperature": reference.sampleTemperature,
         "stampedTemperature": reference.stampedTemperature,
+        "user": username,
       }),
     );
 

@@ -88,12 +88,17 @@ class ReferencesProvider with ChangeNotifier {
   Future<bool> syncReferenceWithApi(Reference reference) async {
     try {
       final token = await SharedPrefsService.getToken();
+      final username = await SharedPrefsService.getUsername();
       if (token == null) return false;
 
       // Solo sincronizar si hay al menos un dato completo
       if (!_hasCompleteSection(reference)) return false;
 
-      final response = await _apiService.insertDataReference(reference, token);
+      final response = await _apiService.insertDataReference(
+        reference,
+        token,
+        username!,
+      );
 
       if (response.code == 200) {
         final index = _references.indexWhere(

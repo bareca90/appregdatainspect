@@ -7,10 +7,12 @@ class AuthProvider with ChangeNotifier {
   bool _isLoading = false;
   String? _errorMessage;
   String? _token;
+  String? _username;
 
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
   String? get token => _token;
+  String? get username => _username;
 
   Future<bool> login(String username, String password) async {
     _isLoading = true;
@@ -21,7 +23,13 @@ class AuthProvider with ChangeNotifier {
 
       if (response.code == 200) {
         _token = response.data['token'];
-        await SharedPrefsService.saveToken(_token!);
+        _username = username;
+        /* await SharedPrefsService.saveToken(_token!); */
+        // Guardamos tanto el token como el usuario
+        await Future.wait([
+          SharedPrefsService.saveToken(_token!),
+          SharedPrefsService.saveUsername(username),
+        ]);
         _errorMessage = null;
         _isLoading = false;
         notifyListeners();
@@ -40,15 +48,29 @@ class AuthProvider with ChangeNotifier {
     }
   }
 
-  Future<void> logout() async {
+  /* Future<void> logout() async {
     _token = null;
     await SharedPrefsService.clearToken();
+    notifyListeners();
+  } */
+  Future<void> logout() async {
+    _token = null;
+    _username = null;
+    await Future.wait([
+      SharedPrefsService.clearToken(),
+      SharedPrefsService.clearUsername(),
+    ]);
     notifyListeners();
   }
 
   // Método para cargar el token al iniciar la app
   Future<void> loadToken() async {
     _token = await SharedPrefsService.getToken();
+    notifyListeners();
+  }
+
+  Future<void> loaduserName() async {
+    _token = await SharedPrefsService.getUsername();
     notifyListeners();
   }
 
