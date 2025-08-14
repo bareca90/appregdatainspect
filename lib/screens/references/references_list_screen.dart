@@ -1,7 +1,9 @@
 import 'package:appregdatainspect/core/constants/app_colors.dart';
 import 'package:appregdatainspect/core/providers/references_provider.dart';
-import 'package:appregdatainspect/models/reference_model.dart';
-import 'package:appregdatainspect/screens/references/inspection_form_screen.dart';
+/* import 'package:appregdatainspect/models/reference_model.dart';
+import 'package:appregdatainspect/screens/references/inspection_form_screen.dart'; */
+import 'package:appregdatainspect/screens/references/widgets/reference_card.dart';
+import 'package:appregdatainspect/screens/references/widgets/reference_search_delegate.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -21,7 +23,22 @@ class ReferencesListScreen extends StatelessWidget {
       backgroundColor: AppColors.lightGray,
       appBar: AppBar(
         title: const Text('Lista de Referencias'),
+        titleTextStyle: TextStyle(
+          color: Colors.white, // Texto en blanco
+          fontSize: 20, // Tamaño opcional
+          fontWeight: FontWeight.bold, // Peso opcional
+        ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () async {
+              final references = provider.references;
+              await showSearch<int>(
+                context: context,
+                delegate: ReferenceSearchDelegate(references),
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.sync),
             onPressed: () async {
@@ -147,7 +164,8 @@ class ReferencesListScreen extends StatelessWidget {
           final reference = provider.references[index];
           return Padding(
             padding: const EdgeInsets.only(bottom: 12),
-            child: _ReferenceCard(reference: reference),
+            //child: _ReferenceCard(reference: reference),
+            child: ReferenceCard(reference: reference),
           );
         },
       ),
@@ -155,7 +173,7 @@ class ReferencesListScreen extends StatelessWidget {
   }
 }
 
-class _ReferenceCard extends StatelessWidget {
+/* class _ReferenceCard extends StatelessWidget {
   final Reference reference;
 
   const _ReferenceCard({required this.reference});
@@ -387,4 +405,4 @@ class _ReferenceCard extends StatelessWidget {
 
     return steps;
   }
-}
+} */

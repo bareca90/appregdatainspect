@@ -39,6 +39,11 @@ class _InspectionFormScreenState extends State<InspectionFormScreen> {
       backgroundColor: AppColors.lightGray,
       appBar: AppBar(
         title: Text('Inspección #${_editedReference.reference}'),
+        titleTextStyle: TextStyle(
+          color: Colors.white, // Texto en blanco
+          fontSize: 20, // Tamaño opcional
+          fontWeight: FontWeight.bold, // Peso opcional
+        ),
         actions: [
           IconButton(icon: const Icon(Icons.save), onPressed: _saveForm),
         ],
