@@ -8,7 +8,7 @@ import 'package:http/http.dart' as http;
 class ApiService {
   final http.Client _client;
   static const String baseUrl =
-      'http://10.100.123.11:8440/api-registerdatainspectcontainer-v1';
+      'http://10.100.120.35:8440/api-registerdatainspectcontainer-v1';
 
   ApiService({http.Client? client}) : _client = client ?? http.Client();
 
