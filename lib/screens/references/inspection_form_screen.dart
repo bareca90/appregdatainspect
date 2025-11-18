@@ -56,8 +56,8 @@ class _InspectionFormScreenState extends State<InspectionFormScreen> {
             children: [
               _buildReleaseSection(),
               const SizedBox(height: 24),
-              _buildSamplingSection(),
-              const SizedBox(height: 24),
+              /* _buildSamplingSection(),
+              const SizedBox(height: 24), */
               _buildStampingSection(),
               const SizedBox(height: 32),
               _buildSubmitButton(),
@@ -151,7 +151,7 @@ class _InspectionFormScreenState extends State<InspectionFormScreen> {
     );
   }
 
-  Widget _buildSamplingSection() {
+  /* Widget _buildSamplingSection() {
     return Card(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: Padding(
@@ -232,7 +232,7 @@ class _InspectionFormScreenState extends State<InspectionFormScreen> {
         ),
       ),
     );
-  }
+  } */
 
   Widget _buildStampingSection() {
     return Card(
